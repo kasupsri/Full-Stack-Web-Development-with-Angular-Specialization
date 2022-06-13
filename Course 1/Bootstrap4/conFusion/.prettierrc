@@ -1,0 +1,6 @@
+{
+    "bracketSameLine": true,
+    "singleAttributePerLine": false,
+    "embeddedLanguageFormatting": "auto",
+    "printWidth": 1000
+}
