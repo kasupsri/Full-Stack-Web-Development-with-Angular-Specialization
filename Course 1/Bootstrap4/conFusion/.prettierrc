@@ -2,5 +2,6 @@
     "bracketSameLine": true,
     "singleAttributePerLine": false,
     "embeddedLanguageFormatting": "auto",
-    "printWidth": 1000
+    "printWidth": 1000,
+    "tabWidth": 4
 }
