@@ -13,7 +13,7 @@ export class LeaderService {
   }
 
   getLeader(id: string): Leader {
-    return LEADERS.filter(leader => leader.id == id)[0];
+    return LEADERS.filter(leader => leader.id === id)[0];
   }
 
   getFeaturedLeader(): Leader {

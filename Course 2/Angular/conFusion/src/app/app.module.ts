@@ -9,6 +9,10 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatListModule } from '@angular/material/list';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { FormsModule } from '@angular/forms';
 
 import { AppComponent } from './app.component';
 import { MenuComponent } from './menu/menu.component';
@@ -29,8 +33,8 @@ import { AppRoutingModule } from './app-routing/app-routing.module';
 import { LoginComponent } from './login/login.component';
 
 @NgModule({
-  declarations: [AppComponent, MenuComponent, DishdetailComponent, HeaderComponent, FooterComponent, AboutComponent, HomeComponent, ContactComponent, LoginComponent],
-  imports: [BrowserModule, BrowserAnimationsModule, FlexLayoutModule, AppRoutingModule, MatToolbarModule, MatGridListModule, MatCardModule, MatButtonModule, MatListModule, MatDialogModule],
+  declarations: [AppComponent, MenuComponent, HeaderComponent, FooterComponent, AboutComponent, HomeComponent, ContactComponent, DishdetailComponent, LoginComponent],
+  imports: [BrowserModule, BrowserAnimationsModule, FlexLayoutModule, AppRoutingModule, MatToolbarModule, MatGridListModule, MatCardModule, MatButtonModule, MatListModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, FormsModule],
   providers: [DishService, PromotionService, LeaderService],
   entryComponents: [LoginComponent],
   bootstrap: [AppComponent],
