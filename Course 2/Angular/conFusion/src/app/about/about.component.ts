@@ -5,19 +5,16 @@ import { Leader } from '../shared/leader';
 @Component({
   selector: 'app-about',
   templateUrl: './about.component.html',
-  styleUrls: ['./about.component.scss']
+  styleUrls: ['./about.component.scss'],
 })
 export class AboutComponent implements OnInit {
+  leaders: Leader[];
 
-  leaders:Leader[];
+  selectedLeader: Leader;
 
-  selectedLeader:Leader;
-
-  constructor(private leaderService:LeaderService) { 
-    this.leaders = leaderService.getLeaders();
+  constructor(private leaderService: LeaderService) {
+    leaderService.getLeaders().then(leaders => (this.leaders = leaders));
   }
 
-  ngOnInit() {
-  }
-
+  ngOnInit() {}
 }
