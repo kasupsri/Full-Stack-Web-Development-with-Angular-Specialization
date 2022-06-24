@@ -21,6 +21,7 @@ export class DishdetailComponent implements OnInit {
   dishCommentForm: FormGroup;
   dishComment: Comment;
   @ViewChild('commentForm') commentFormDirective;
+  errMsg:string;
 
   formErrors = {
     author: '',
@@ -42,11 +43,11 @@ export class DishdetailComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.dishService.getDishIds().subscribe(dishIds => (this.dishIds = dishIds));
+    this.dishService.getDishIds().subscribe(dishIds => (this.dishIds = dishIds), errMsg => (this.errMsg = <any>errMsg));
     this.route.params.pipe(switchMap((params: Params) => this.dishService.getDish(params['id']))).subscribe(dish => {
       this.dish = dish;
       this.setPrevNext(dish.id);
-    });
+    }, errMsg => this.errMsg = <any>errMsg);
   }
 
   goBack(): void {

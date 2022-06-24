@@ -34,6 +34,7 @@ import 'hammerjs';
 import { DishService } from './services/dish.service';
 import { PromotionService } from './services/promotion.service';
 import { LeaderService } from './services/leader.service';
+import { ProcessHTTPMsgService } from './services/process-httpmsg.service';
 
 import { AppRoutingModule } from './app-routing/app-routing.module';
 import { LoginComponent } from './login/login.component';
@@ -43,7 +44,7 @@ import { baseURL } from './shared/baseurl';
 @NgModule({
   declarations: [AppComponent, MenuComponent, HeaderComponent, FooterComponent, AboutComponent, HomeComponent, ContactComponent, DishdetailComponent, LoginComponent],
   imports: [BrowserModule, BrowserAnimationsModule, FlexLayoutModule, AppRoutingModule, MatToolbarModule, MatGridListModule, MatProgressSpinnerModule, MatCardModule, MatButtonModule, MatListModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, FormsModule, MatSelectModule, MatSlideToggleModule, ReactiveFormsModule, MatSliderModule, HttpClientModule],
-  providers: [{ provide: 'BaseURL', useValue: baseURL }, DishService, PromotionService, LeaderService],
+  providers: [{ provide: 'BaseURL', useValue: baseURL }, ProcessHTTPMsgService, DishService, PromotionService, LeaderService],
   entryComponents: [LoginComponent],
   bootstrap: [AppComponent],
 })
