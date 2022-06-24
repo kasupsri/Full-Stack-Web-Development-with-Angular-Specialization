@@ -17,6 +17,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSlideToggleModule } from '@angular/material/slide-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSliderModule } from '@angular/material/slider';
 
 import { AppComponent } from './app.component';
 import { MenuComponent } from './menu/menu.component';
@@ -38,7 +39,7 @@ import { LoginComponent } from './login/login.component';
 
 @NgModule({
   declarations: [AppComponent, MenuComponent, HeaderComponent, FooterComponent, AboutComponent, HomeComponent, ContactComponent, DishdetailComponent, LoginComponent],
-  imports: [BrowserModule, BrowserAnimationsModule, FlexLayoutModule, AppRoutingModule, MatToolbarModule, MatGridListModule, MatProgressSpinnerModule, MatCardModule, MatButtonModule, MatListModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, FormsModule, MatSelectModule, MatSlideToggleModule, ReactiveFormsModule],
+  imports: [BrowserModule, BrowserAnimationsModule, FlexLayoutModule, AppRoutingModule, MatToolbarModule, MatGridListModule, MatProgressSpinnerModule, MatCardModule, MatButtonModule, MatListModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, FormsModule, MatSelectModule, MatSlideToggleModule, ReactiveFormsModule, MatSliderModule],
   providers: [DishService, PromotionService, LeaderService],
   entryComponents: [LoginComponent],
   bootstrap: [AppComponent],
