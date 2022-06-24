@@ -27,6 +27,7 @@ import { FooterComponent } from './footer/footer.component';
 import { AboutComponent } from './about/about.component';
 import { HomeComponent } from './home/home.component';
 import { ContactComponent } from './contact/contact.component';
+import { HttpClientModule } from '@angular/common/http';
 
 import 'hammerjs';
 
@@ -37,10 +38,12 @@ import { LeaderService } from './services/leader.service';
 import { AppRoutingModule } from './app-routing/app-routing.module';
 import { LoginComponent } from './login/login.component';
 
+import { baseURL } from './shared/baseurl';
+
 @NgModule({
   declarations: [AppComponent, MenuComponent, HeaderComponent, FooterComponent, AboutComponent, HomeComponent, ContactComponent, DishdetailComponent, LoginComponent],
-  imports: [BrowserModule, BrowserAnimationsModule, FlexLayoutModule, AppRoutingModule, MatToolbarModule, MatGridListModule, MatProgressSpinnerModule, MatCardModule, MatButtonModule, MatListModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, FormsModule, MatSelectModule, MatSlideToggleModule, ReactiveFormsModule, MatSliderModule],
-  providers: [DishService, PromotionService, LeaderService],
+  imports: [BrowserModule, BrowserAnimationsModule, FlexLayoutModule, AppRoutingModule, MatToolbarModule, MatGridListModule, MatProgressSpinnerModule, MatCardModule, MatButtonModule, MatListModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, FormsModule, MatSelectModule, MatSlideToggleModule, ReactiveFormsModule, MatSliderModule, HttpClientModule],
+  providers: [{ provide: 'BaseURL', useValue: baseURL }, DishService, PromotionService, LeaderService],
   entryComponents: [LoginComponent],
   bootstrap: [AppComponent],
 })
