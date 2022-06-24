@@ -7,6 +7,7 @@ import { HttpClient } from '@angular/common/http';
 import { baseURL } from '../shared/baseurl';
 import { map, catchError } from 'rxjs/operators';
 import { ProcessHTTPMsgService } from './process-httpmsg.service';
+import { HttpHeaders } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
@@ -33,5 +34,14 @@ export class DishService {
     return this.getDishes()
       .pipe(map(dishes => dishes.map(dish => dish.id)))
       .pipe(catchError(error => error));
+  }
+
+  putDish(dish: Dish): Observable<Dish> {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type': 'application/json',
+      }),
+    };
+    return this.http.put<Dish>(baseURL + 'dishes/' + dish.id, dish, httpOptions).pipe(catchError(this.processHTTPMsgService.handleError));
   }
 }
