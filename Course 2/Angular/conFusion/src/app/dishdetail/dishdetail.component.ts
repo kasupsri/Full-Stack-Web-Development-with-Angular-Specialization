@@ -6,13 +6,32 @@ import { DishService } from '../services/dish.service';
 import { switchMap } from 'rxjs/operators';
 import { Comment } from '../shared/comment';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { trigger, state, style, animate, transition } from '@angular/animations';
 
 @Component({
   selector: 'app-dishdetail',
   templateUrl: './dishdetail.component.html',
   styleUrls: ['./dishdetail.component.scss'],
+  animations: [
+    trigger('visibility', [
+      state(
+        'shown',
+        style({
+          transform: 'scale(1.0)',
+          opacity: 1,
+        })
+      ),
+      state(
+        'hidden',
+        style({
+          transform: 'scale(0.5)',
+          opacity: 0,
+        })
+      ),
+      transition('* => *', animate('0.5s ease-in-out')),
+    ]),
+  ],
 })
-
 export class DishdetailComponent implements OnInit {
   dish: Dish;
   dishIds: string[];
@@ -21,8 +40,9 @@ export class DishdetailComponent implements OnInit {
   dishCommentForm: FormGroup;
   dishComment: Comment;
   @ViewChild('commentForm') commentFormDirective;
-  errMsg:string;
-  dishCopy:Dish;
+  errMsg: string;
+  dishCopy: Dish;
+  visibility = 'shown';
 
   formErrors = {
     author: '',
@@ -44,12 +64,26 @@ export class DishdetailComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.dishService.getDishIds().subscribe(dishIds => (this.dishIds = dishIds), errMsg => (this.errMsg = <any>errMsg));
-    this.route.params.pipe(switchMap((params: Params) => this.dishService.getDish(params['id']))).subscribe(dish => {
-      this.dish = dish;
-      this.dishCopy = dish;
-      this.setPrevNext(dish.id);
-    }, errMsg => this.errMsg = <any>errMsg);
+    this.dishService.getDishIds().subscribe(
+      dishIds => (this.dishIds = dishIds),
+      errMsg => (this.errMsg = <any>errMsg)
+    );
+    this.route.params
+      .pipe(
+        switchMap((params: Params) => {
+          this.visibility = 'hidden';
+          return this.dishService.getDish(params['id']);
+        })
+      )
+      .subscribe(
+        dish => {
+          this.dish = dish;
+          this.dishCopy = dish;
+          this.setPrevNext(dish.id);
+          this.visibility = 'shown';
+        },
+        errMsg => (this.errMsg = <any>errMsg)
+      );
   }
 
   goBack(): void {
@@ -99,14 +133,17 @@ export class DishdetailComponent implements OnInit {
 
       this.dishCopy.comments.push(this.dishComment);
 
-      this.dishService.putDish(this.dishCopy).subscribe(dish => {
-        this.dish=dish;
-        this.dishCopy=dish;
-      }, errMsg => {
-        this.dish = null;
-        this.dishCopy = null;
-        this.errMsg = <any>errMsg;
-      });
+      this.dishService.putDish(this.dishCopy).subscribe(
+        dish => {
+          this.dish = dish;
+          this.dishCopy = dish;
+        },
+        errMsg => {
+          this.dish = null;
+          this.dishCopy = null;
+          this.errMsg = <any>errMsg;
+        }
+      );
 
       this.commentFormDirective.resetForm({
         author: '',
