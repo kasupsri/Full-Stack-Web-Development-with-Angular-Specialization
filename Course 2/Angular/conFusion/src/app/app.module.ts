@@ -40,9 +40,10 @@ import { AppRoutingModule } from './app-routing/app-routing.module';
 import { LoginComponent } from './login/login.component';
 
 import { baseURL } from './shared/baseurl';
+import { HighlightDirective } from './directives/highlight.directive';
 
 @NgModule({
-  declarations: [AppComponent, MenuComponent, HeaderComponent, FooterComponent, AboutComponent, HomeComponent, ContactComponent, DishdetailComponent, LoginComponent],
+  declarations: [AppComponent, MenuComponent, HeaderComponent, FooterComponent, AboutComponent, HomeComponent, ContactComponent, DishdetailComponent, LoginComponent, HighlightDirective],
   imports: [BrowserModule, BrowserAnimationsModule, FlexLayoutModule, AppRoutingModule, MatToolbarModule, MatGridListModule, MatProgressSpinnerModule, MatCardModule, MatButtonModule, MatListModule, MatDialogModule, MatFormFieldModule, MatInputModule, MatCheckboxModule, FormsModule, MatSelectModule, MatSlideToggleModule, ReactiveFormsModule, MatSliderModule, HttpClientModule],
   providers: [{ provide: 'BaseURL', useValue: baseURL }, ProcessHTTPMsgService, DishService, PromotionService, LeaderService],
   entryComponents: [LoginComponent],

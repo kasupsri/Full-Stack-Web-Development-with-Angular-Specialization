@@ -33,7 +33,7 @@
     <h2>Error</h2>
     <h4>{{errMsg}}</h4>
   </div>
-  
+
 
   <div fxFlex="40" fxOffset="10px" *ngIf="dish">
     <mat-list>
@@ -59,23 +59,22 @@
     </mat-list>
   </div>
 
-
-  <form novalidate [formGroup]="dishCommentForm" #commentForm="ngForm" (ngSubmit)="onSubmit()">
-    <p>
-      <mat-form-field class="half-width">
-        <input matInput formControlName="author" placeholder="Name" type="text" required>
-        <mat-error *ngIf="formErrors.author">{{formErrors.author}}</mat-error>
-      </mat-form-field>
-    </p>
-    <mat-slider flex formControlName="rating" step="1" min="1" max="5" thumbLable tickInterval="1"></mat-slider>
-    <p>
-      <mat-form-field class="full-width">
-        <textarea matInput formControlName="comment" placeholder="Your Feedback" rows=12></textarea>
-      </mat-form-field>
-    </p>
-    <button type="submit" mat-button class="background-primary text-floral-white"
-      [disabled]="dishCommentForm.invalid">Submit</button>
-  </form>
-
-
+  <div xFlex="40" fxOffset="10px">
+    <form novalidate [formGroup]="dishCommentForm" #commentForm="ngForm" (ngSubmit)="onSubmit()">
+      <p>
+        <mat-form-field class="half-width">
+          <input matInput formControlName="author" placeholder="Name" type="text" required>
+          <mat-error *ngIf="formErrors.author">{{formErrors.author}}</mat-error>
+        </mat-form-field>
+      </p>
+      <mat-slider flex formControlName="rating" step="1" min="1" max="5" thumbLable tickInterval="1"></mat-slider>
+      <p>
+        <mat-form-field class="full-width">
+          <textarea matInput formControlName="comment" placeholder="Your Feedback" rows=12></textarea>
+        </mat-form-field>
+      </p>
+      <button type="submit" mat-button class="background-primary text-floral-white"
+        [disabled]="dishCommentForm.invalid">Submit</button>
+    </form>
+  </div>
 </div>
