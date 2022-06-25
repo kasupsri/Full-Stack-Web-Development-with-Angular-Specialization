@@ -1,10 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { flyInOut } from '../animations/app.animation';
+import { expand, flyInOut } from '../animations/app.animation';
 import { Feedback, ContactType } from '../shared/feedback';
 import { FeedbackService } from '../services/feedback.service';
 import { timer } from 'rxjs';
-import { ThrowStmt } from '@angular/compiler';
 
 @Component({
   selector: 'app-contact',
@@ -14,7 +13,7 @@ import { ThrowStmt } from '@angular/compiler';
     '[@flyInOut]': 'true',
     style: 'display:block',
   },
-  animations: [flyInOut()],
+  animations: [flyInOut(), expand()],
 })
 export class ContactComponent implements OnInit {
   feedbackForm: FormGroup;
