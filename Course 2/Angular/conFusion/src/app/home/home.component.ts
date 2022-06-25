@@ -22,6 +22,8 @@ export class HomeComponent implements OnInit {
   promotion: Promotion;
   leader: Leader;
   dishErrMsg: any;
+  leaderErrMsg: any;
+  promotionErrMsg: any;
 
   constructor(private dishService: DishService, private promotionService: PromotionService, private leaderService: LeaderService, @Inject('BaseURL') private BaseURL) {}
 
@@ -30,7 +32,13 @@ export class HomeComponent implements OnInit {
       dish => (this.dish = dish),
       errMsg => (this.dishErrMsg = <any>errMsg)
     );
-    this.promotionService.getFeaturedPromotion().subscribe(promotion => (this.promotion = promotion));
-    this.leaderService.getFeaturedLeader().subscribe(leader => (this.leader = leader));
+    this.promotionService.getFeaturedPromotion().subscribe(
+      promotion => (this.promotion = promotion),
+      errMsg => (this.promotionErrMsg = <any>errMsg)
+    );
+    this.leaderService.getFeaturedLeader().subscribe(
+      leader => (this.leader = leader),
+      errMsg => (this.leaderErrMsg = <any>errMsg)
+    );
   }
 }

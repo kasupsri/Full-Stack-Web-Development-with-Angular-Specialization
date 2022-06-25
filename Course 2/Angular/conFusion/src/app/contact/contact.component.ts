@@ -2,6 +2,9 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { flyInOut } from '../animations/app.animation';
 import { Feedback, ContactType } from '../shared/feedback';
+import { FeedbackService } from '../services/feedback.service';
+import { timer } from 'rxjs';
+import { ThrowStmt } from '@angular/compiler';
 
 @Component({
   selector: 'app-contact',
@@ -18,6 +21,10 @@ export class ContactComponent implements OnInit {
   feedback: Feedback;
   contactType = ContactType;
   @ViewChild('fform') feedbackFormDirective;
+  postedfeedback: Feedback;
+  errMsg: string;
+  submitting = false;
+  hideForm = false;
 
   formErrors = {
     firstname: '',
@@ -47,7 +54,7 @@ export class ContactComponent implements OnInit {
     },
   };
 
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private feedbackService: FeedbackService) {
     this.createForm();
   }
 
@@ -68,18 +75,43 @@ export class ContactComponent implements OnInit {
   }
 
   onSubmit() {
+    this.submitting = true;
+    this.hideForm = true;
+
     this.feedback = this.feedbackForm.value;
-    console.log(this.feedback);
-    this.feedbackForm.reset({
-      firstname: '',
-      lastname: '',
-      telnum: '0',
-      email: '',
-      agree: false,
-      contacttype: 'None',
-      message: '',
+
+    this.feedbackService.submitFeedback(this.feedback).subscribe(
+      feedback => {
+        this.postedfeedback = feedback;
+        this.submitting = false;
+        this.resetAfterSubmit(5000);
+      },
+      errMsg => {
+        this.errMsg = <any>errMsg;
+        this.submitting = false;
+        this.resetAfterSubmit(5000);
+      }
+    );
+  }
+
+  resetAfterSubmit(time: number) {
+    timer(time).subscribe(() => {
+      this.errMsg = null;
+      this.postedfeedback = null;
+      this.hideForm = false;
+
+      this.feedbackForm.reset({
+        firstname: '',
+        lastname: '',
+        telnum: '0',
+        email: '',
+        agree: false,
+        contacttype: 'None',
+        message: '',
+      });
+
+      this.feedbackFormDirective.resetForm();
     });
-    this.feedbackFormDirective.resetForm();
   }
 
   onValueChanged(data?: any) {
