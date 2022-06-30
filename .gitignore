@@ -1,5 +1,5 @@
 node_modules
 **/.DS_Store
 dist
-mongodb
-mongodb/data
+mongodb/**
+mongodb/data/**
