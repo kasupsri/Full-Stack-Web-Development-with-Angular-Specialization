@@ -36,13 +36,20 @@ exports.jwtPassport = passport.use(
 
 exports.verifyUser = passport.authenticate("jwt", { session: false });
 
-
 exports.verifyAdmin = function (req, res, next) {
-  if (req && req.user && req.user.admin === true) {
-    next();
-  } else {
-    err = new Error("You are not authorized to perform this operation!");
-    err.status = 403;
-    return next(err);
-  }
+  User.findOne({ _id: req.user._id })
+    .then(
+      (user) => {
+        console.log("User : ", req.user);
+        if (user.admin) {
+          next();
+        } else {
+          err = new Error("You are not authorized to perform this operation!");
+          err.status = 403;
+          return next(err);
+        }
+      },
+      (err) => next(err)
+    )
+    .catch((err) => next(err));
 };
