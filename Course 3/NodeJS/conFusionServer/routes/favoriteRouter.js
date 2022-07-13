@@ -9,143 +9,147 @@ const favouriteRouter = express.Router();
 
 favouriteRouter.use(bodyParser.json());
 
-favouriteRouter
+favoriteRouter
   .route("/")
   .options(cors.corsWithOptions, (req, res) => {
     res.sendStatus(200);
   })
   .get(cors.cors, authenticate.verifyUser, (req, res, next) => {
-    Favourites.find({})
+    Favorites.findOne({ user: req.user._id })
       .populate("user")
       .populate("dishes")
       .then(
-        (favourites) => {
-          // extract favourites that match the req.user.id
-          if (favourites) {
-            user_favourites = favourites.filter(
-              (fav) => fav.user._id.toString() === req.user.id.toString()
-            )[0];
-            if (!user_favourites) {
-              var err = new Error("You have no favourites!");
-              err.status = 404;
-              return next(err);
-            }
-            res.statusCode = 200;
-            res.setHeader("Content-Type", "application/json");
-            res.json(user_favourites);
-          } else {
-            var err = new Error("There are no favourites");
-            err.status = 404;
-            return next(err);
-          }
+        (favorite) => {
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json(favorite);
         },
         (err) => next(err)
       )
       .catch((err) => next(err));
   })
   .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    Favourites.find({})
-      .populate("user")
-      .populate("dishes")
-      .then((favourites) => {
-        var user;
-        if (favourites)
-          user = favourites.filter(
-            (fav) => fav.user._id.toString() === req.user.id.toString()
-          )[0];
-        if (!user) user = new Favourites({ user: req.user.id });
-        for (let i of req.body) {
-          if (
-            user.dishes.find((d_id) => {
-              if (d_id._id) {
-                return d_id._id.toString() === i._id.toString();
-              }
-            })
-          )
-            continue;
-          user.dishes.push(i._id);
-        }
-        user
-          .save()
-          .then(
-            (userFavs) => {
-              res.statusCode = 201;
-              res.setHeader("Content-Type", "application/json");
-              res.json(userFavs);
-              console.log("Favourites Created");
-            },
-            (err) => next(err)
-          )
-          .catch((err) => next(err));
-      })
-      .catch((err) => next(err));
-  })
-
-  .put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    res.statusCode = 403;
-    res.end("PUT operation is not supported on /favourites");
-  })
-  .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    Favourites.find({})
-      .populate("user")
-      .populate("dishes")
+    Favorites.findOne({ user: req.user._id })
       .then(
-        (favourites) => {
-          var favToRemove;
-          if (favourites) {
-            favToRemove = favourites.filter(
-              (fav) => fav.user._id.toString() === req.user.id.toString()
-            )[0];
+        (favorite) => {
+          var dishIds = [];
+          //Check if the request body is an array and populate the array
+          if (Array.isArray(req.body)) {
+            for (var i = req.body.length - 1; i >= 0; i--) {
+              dishIds.push(req.body[i]._id);
+            }
           }
-          if (favToRemove) {
-            favToRemove.remove().then(
-              (result) => {
+
+          if (favorite != null) {
+            //Favorites exists
+            for (var i = 0; i < dishIds.length; i++) {
+              if (favorite.dishes.indexOf(dishIds[i]) < 0) {
+                //If the dish does not exist in the current list of favorites
+                favorite.dishes.push(dishIds[i]);
+              }
+            }
+
+            favorite.save().then(
+              (favorite) => {
                 res.statusCode = 200;
                 res.setHeader("Content-Type", "application/json");
-                res.json(result);
+                res.json(favorite);
               },
               (err) => next(err)
             );
           } else {
-            var err = new Error("You do not have any favourites");
-            err.status = 404;
-            return next(err);
+            //We have create a favorite entry for this user
+            Favorites.create({
+              user: req.user._id,
+              dishes: dishIds,
+            })
+              .then(
+                (favorite) => {
+                  console.log("Favorite Created ", favorite);
+                  res.statusCode = 200;
+                  res.setHeader("Content-Type", "application/json");
+                  res.json(favorite);
+                },
+                (err) => next(err)
+              )
+              .catch((err) => next(err));
           }
+        },
+        (err) => next(err)
+      )
+      .catch((err) => next(err));
+  })
+  .put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
+    res.statusCode = 403;
+    res.end("PUT operation not supported on /favorites");
+  })
+  .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
+    Favorites.remove({ user: req.user._id })
+      .then(
+        (resp) => {
+          res.statusCode = 200;
+          res.setHeader("Content-Type", "application/json");
+          res.json(resp);
         },
         (err) => next(err)
       )
       .catch((err) => next(err));
   });
 
-favouriteRouter
+//favorites/dishid
+favoriteRouter
   .route("/:dishId")
   .options(cors.corsWithOptions, (req, res) => {
     res.sendStatus(200);
   })
   .get(cors.cors, authenticate.verifyUser, (req, res, next) => {
-    Favourites.find({})
-      .populate("user")
-      .populate("dishes")
+    Favorites.findOne({ user: req.user._id })
       .then(
-        (favourites) => {
-          if (favourites) {
-            const favs = favourites.filter(
-              (fav) => fav.user._id.toString() === req.user.id.toString()
-            )[0];
-            const dish = favs.dishes.filter(
-              (dish) => dish.id === req.params.dishId
-            )[0];
-            if (dish) {
+        (favorites) => {
+          if (!favorites) {
+            res.statusCode = 200;
+            res.setHeader("Content-Type", "application/json");
+            return res.json({ exists: false, favorites: favorites });
+          } else {
+            if (favorites.dishes.indexOf(req.params.dishId) < 0) {
               res.statusCode = 200;
               res.setHeader("Content-Type", "application/json");
-              res.json(dish);
+              return res.json({ exists: false, favorites: favorites });
             } else {
-              var err = new Error("You do not have dish " + req.params.dishId);
-              err.status = 404;
-              return next(err);
+              res.statusCode = 200;
+              res.setHeader("Content-Type", "application/json");
+              return res.json({ exists: true, favorites: favorites });
             }
+          }
+        },
+        (err) => next(err)
+      )
+      .catch((err) => next(err));
+  })
+  .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
+    Favorites.findOne({ user: req.user._id })
+      .then(
+        (favorite) => {
+          var dishId = req.params.dishId;
+
+          if (favorite != null) {
+            //Favorites exists
+            if (favorite.dishes.indexOf(dishId) < 0) {
+              //If the dish does not exist in the current list of favorites
+              favorite.dishes.push(dishId);
+            }
+
+            favorite.save().then(
+              (favorite) => {
+                res.statusCode = 200;
+                res.setHeader("Content-Type", "application/json");
+                res.json(favorite);
+              },
+              (err) => next(err)
+            );
           } else {
-            var err = new Error("You do not have any favourites");
+            //Assignment did not specify if we have to create a Favorite object in this scenario
+            err = new Error("No Favorites is found for this user");
             err.status = 404;
             return next(err);
           }
@@ -154,70 +158,37 @@ favouriteRouter
       )
       .catch((err) => next(err));
   })
-  .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    Favourites.find({})
-      .populate("user")
-      .populate("dishes")
-      .then((favourites) => {
-        var user;
-        if (favourites)
-          user = favourites.filter(
-            (fav) => fav.user._id.toString() === req.user.id.toString()
-          )[0];
-        if (!user) user = new Favourites({ user: req.user.id });
-        if (
-          !user.dishes.find((d_id) => {
-            if (d_id._id)
-              return d_id._id.toString() === req.params.dishId.toString();
-          })
-        )
-          user.dishes.push(req.params.dishId);
-
-        user
-          .save()
-          .then(
-            (userFavs) => {
-              res.statusCode = 201;
-              res.setHeader("Content-Type", "application/json");
-              res.json(userFavs);
-              console.log("Favourites Created");
-            },
-            (err) => next(err)
-          )
-          .catch((err) => next(err));
-      })
-      .catch((err) => next(err));
-  })
-
   .put(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
     res.statusCode = 403;
-    res.end("PUT operation is not supported on /favourites/:dishId");
+    res.end("PUT operation not supported on /favorites/:dishId");
   })
   .delete(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
-    Favourites.find({})
-      .populate("user")
-      .populate("dishes")
+    Favorites.findOne({ user: req.user._id })
       .then(
-        (favourites) => {
-          var user;
-          if (favourites)
-            user = favourites.filter(
-              (fav) => fav.user._id.toString() === req.user.id.toString()
-            )[0];
-          if (user) {
-            user.dishes = user.dishes.filter(
-              (dishid) => dishid._id.toString() !== req.params.dishId
-            );
-            user.save().then(
-              (result) => {
+        (favorite) => {
+          var dishId = req.params.dishId;
+
+          if (favorite != null) {
+            //Favorites exists
+
+            for (var i = favorite.dishes.length - 1; i >= 0; i--) {
+              //Delete all occurences of the dishId
+              if (favorite.dishes[i].equals(dishId)) {
+                favorite.dishes.splice(i, 1);
+              }
+            }
+
+            favorite.save().then(
+              (favorite) => {
                 res.statusCode = 200;
                 res.setHeader("Content-Type", "application/json");
-                res.json(result);
+                res.json(favorite);
               },
               (err) => next(err)
             );
           } else {
-            var err = new Error("You do not have any favourites");
+            //Assignment did not specify if we have to create a Favorite object in this scenario
+            err = new Error("No Favorites is found for this user");
             err.status = 404;
             return next(err);
           }
@@ -227,4 +198,4 @@ favouriteRouter
       .catch((err) => next(err));
   });
 
-module.exports = favouriteRouter;
+module.exports = favoriteRouter;
