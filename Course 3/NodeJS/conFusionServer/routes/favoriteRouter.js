@@ -3,11 +3,11 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const authenticate = require("../authenticate");
 const cors = require("./cors");
-const Favourites = require("../models/favorite");
+const Favorites = require("../models/favorite");
 
-const favouriteRouter = express.Router();
+const favoriteRouter = express.Router();
 
-favouriteRouter.use(bodyParser.json());
+favoriteRouter.use(bodyParser.json());
 
 favoriteRouter
   .route("/")
@@ -28,7 +28,7 @@ favoriteRouter
       )
       .catch((err) => next(err));
   })
-  .post(cors.corsWithOptions, authenticate.verifyUser, (req, res, next) => {
+  .post(cors.cors, authenticate.verifyUser, (req, res, next) => {
     Favorites.findOne({ user: req.user._id })
       .then(
         (favorite) => {
@@ -148,10 +148,22 @@ favoriteRouter
               (err) => next(err)
             );
           } else {
-            //Assignment did not specify if we have to create a Favorite object in this scenario
-            err = new Error("No Favorites is found for this user");
-            err.status = 404;
-            return next(err);
+            //We have create a favorite entry for this user
+            var dishId = req.params.dishId;
+            Favorites.create({
+              user: req.user._id,
+              dishes: dishId,
+            })
+              .then(
+                (favorite) => {
+                  console.log("Favorite Created ", favorite);
+                  res.statusCode = 200;
+                  res.setHeader("Content-Type", "application/json");
+                  res.json(favorite);
+                },
+                (err) => next(err)
+              )
+              .catch((err) => next(err));
           }
         },
         (err) => next(err)
