@@ -51,28 +51,37 @@ favoriteRouter
 
             favorite.save().then(
               (favorite) => {
-                res.statusCode = 200;
-                res.setHeader("Content-Type", "application/json");
-                res.json(favorite);
+                Favorites.findById(favorite._id)
+                  .populate("user")
+                  .populate("dishes")
+                  .then((favorite) => {
+                    res.statusCode = 200;
+                    res.setHeader("Content-Type", "application/json");
+                    res.json(favorite);
+                  });
               },
               (err) => next(err)
             );
           } else {
             //We have create a favorite entry for this user
-            Favorites.create({
-              user: req.user._id,
-              dishes: dishIds,
-            })
-              .then(
-                (favorite) => {
-                  console.log("Favorite Created ", favorite);
-                  res.statusCode = 200;
-                  res.setHeader("Content-Type", "application/json");
-                  res.json(favorite);
-                },
-                (err) => next(err)
-              )
-              .catch((err) => next(err));
+            for (i = 0; i < req.body.length; i++)
+              if (favorite.dishes.indexOf(req.body[i]._id) < 0)
+                favorite.dishes.push(req.body[i]);
+            favorite
+              .save()
+              .then((favorite) => {
+                Favorites.findById(favorite._id)
+                  .populate("user")
+                  .populate("dishes")
+                  .then((favorite) => {
+                    res.statusCode = 200;
+                    res.setHeader("Content-Type", "application/json");
+                    res.json(favorite);
+                  });
+              })
+              .catch((err) => {
+                return next(err);
+              });
           }
         },
         (err) => next(err)
@@ -141,29 +150,37 @@ favoriteRouter
 
             favorite.save().then(
               (favorite) => {
-                res.statusCode = 200;
-                res.setHeader("Content-Type", "application/json");
-                res.json(favorite);
+                Favorites.findById(favorite._id)
+                  .populate("user")
+                  .populate("dishes")
+                  .then((favorite) => {
+                    res.statusCode = 200;
+                    res.setHeader("Content-Type", "application/json");
+                    res.json(favorite);
+                  });
               },
               (err) => next(err)
             );
           } else {
             //We have create a favorite entry for this user
-            var dishId = req.params.dishId;
-            Favorites.create({
-              user: req.user._id,
-              dishes: dishId,
-            })
-              .then(
-                (favorite) => {
-                  console.log("Favorite Created ", favorite);
-                  res.statusCode = 200;
-                  res.setHeader("Content-Type", "application/json");
-                  res.json(favorite);
-                },
-                (err) => next(err)
-              )
-              .catch((err) => next(err));
+            if (favorite.dishes.indexOf(req.params.dishId) < 0) {
+              favorite.dishes.push(req.body);
+              favorite
+                .save()
+                .then((favorite) => {
+                  Favorites.findById(favorite._id)
+                    .populate("user")
+                    .populate("dishes")
+                    .then((favorite) => {
+                      res.statusCode = 200;
+                      res.setHeader("Content-Type", "application/json");
+                      res.json(favorite);
+                    });
+                })
+                .catch((err) => {
+                  return next(err);
+                });
+            }
           }
         },
         (err) => next(err)
@@ -192,9 +209,14 @@ favoriteRouter
 
             favorite.save().then(
               (favorite) => {
-                res.statusCode = 200;
-                res.setHeader("Content-Type", "application/json");
-                res.json(favorite);
+                Favorites.findById(favorite._id)
+                  .populate("user")
+                  .populate("dishes")
+                  .then((favorite) => {
+                    res.statusCode = 200;
+                    res.setHeader("Content-Type", "application/json");
+                    res.json(favorite);
+                  });
               },
               (err) => next(err)
             );
